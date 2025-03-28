@@ -1,0 +1,29 @@
+{
+  "name": "everknot",
+  "version": "0.1.0",
+  "author": "Paul Davies <lagdotcom@gmail.com>",
+  "license": "UNLICENSED",
+  "scripts": {
+    "lint": "eslint src",
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/watch.mjs",
+    "start": "node scripts/watch.mjs",
+    "start-prod": "node scripts/watch.mjs production",
+    "find-deadcode": "ts-prune"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.12.0",
+    "@types/node": "^22.7.5",
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.25.1",
+    "eslint": "^9.12.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "ts-prune": "^0.10.3",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.19.1"
+  }
+}
