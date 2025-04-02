@@ -1,5 +1,6 @@
 import { FrameIndex, Milliseconds, Pixels } from "./flavours";
 import MapSet from "./MapSet";
+import Rect from "./Rect";
 import Spritesheet from "./Spritesheet";
 import XY from "./XY";
 
@@ -41,6 +42,7 @@ export default class Animator<
     public spritesheet: Spritesheet<TSprite>,
     public currentAnimation: TAnimation,
     public origin: XY<Pixels>,
+    public hitbox: Rect<Pixels>,
     animations: AnimationData<TAnimation, TSprite, TEvent, TFlag>,
   ) {
     this.frameIndex = 1;

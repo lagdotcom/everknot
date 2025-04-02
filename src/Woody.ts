@@ -1,5 +1,6 @@
 import Animator, { AnimationData } from "./lib/Animator";
-import { Milliseconds } from "./lib/flavours";
+import { Milliseconds, Pixels } from "./lib/flavours";
+import Rect from "./lib/Rect";
 import Spritesheet from "./lib/Spritesheet";
 import XY from "./lib/XY";
 import woodyUrl from "./res/pc_woody.png";
@@ -306,6 +307,7 @@ const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
 export const animator = new Animator(
   spritesheet,
   "idle",
-  new XY(110, 175),
+  new XY<Pixels>(110, 175),
+  new Rect<Pixels>(62, 80, 102, 90),
   animationData,
 );
