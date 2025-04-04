@@ -28,10 +28,10 @@ export type AnimationData<
 > = Record<TAnimation, Animation<TSprite, TEvent, TFlag>>;
 
 export default class Animator<
-  TAnimation extends string,
-  TSprite,
-  TEvent,
-  TFlag,
+  TAnimation extends string = string,
+  TSprite = string,
+  TEvent = string,
+  TFlag = string,
 > {
   animations: Map<TAnimation, Animation<TSprite, TEvent, TFlag>>;
   frameIndex: FrameIndex;
@@ -39,6 +39,7 @@ export default class Animator<
   listeners: MapSet<TEvent, AnimationEventListener>;
 
   constructor(
+    public name: string,
     public spritesheet: Spritesheet<TSprite>,
     public currentAnimation: TAnimation,
     public origin: XY<Pixels>,

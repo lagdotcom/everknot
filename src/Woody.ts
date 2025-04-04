@@ -307,7 +307,8 @@ const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
   },
 };
 
-export const animator = new Animator(
+export const woodyAnimator = new Animator<Animation, Sprite, Event, Flag>(
+  "Woody",
   spritesheet,
   "idle",
   new XY<Pixels>(110, 175),

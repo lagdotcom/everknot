@@ -1,9 +1,13 @@
 import AnimationTester from "./AnimationTester";
-import { animator as WoodyAnimator } from "./Woody";
+import { kapplerAnimator } from "./Kappler";
+import ResourceManager from "./lib/ResourceManager";
+import { woodyAnimator } from "./Woody";
 
 async function startAnimationTester() {
-  const t = new AnimationTester(WoodyAnimator);
-  await t.load();
+  const t = new AnimationTester(new ResourceManager(), [
+    woodyAnimator,
+    kapplerAnimator,
+  ]);
   t.run();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
