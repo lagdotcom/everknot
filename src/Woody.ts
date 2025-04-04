@@ -118,8 +118,11 @@ type Animation =
   | "hurt"
   | "death";
 type Sprite = typeof spritesheet extends Spritesheet<infer T> ? T : never;
+
 type Event = "turn" | "land" | "swing" | "dodge" | "hurt" | "death";
-type Flag = "ward" | "wardb" | "wardf" | "nocontrol";
+
+type Flag = "Ward" | "WardB" | "WardF" | "NoControl";
+const nc: Flag = "NoControl";
 
 const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
   idle: { frames: [{ sprite: "idle", time: Infinity }] },
@@ -226,80 +229,80 @@ const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
   wardf: {
     loop: 1,
     frames: [
-      { sprite: "wardf1", time: 80, flags: ["wardf"] },
-      { sprite: "wardf2", time: 80, flags: ["wardf"] },
-      { sprite: "wardf3", time: 80, flags: ["wardf"] },
-      { sprite: "wardf4", time: 80, flags: ["wardf"] },
+      { sprite: "wardf1", time: 80, flags: ["WardF"] },
+      { sprite: "wardf2", time: 80, flags: ["WardF"] },
+      { sprite: "wardf3", time: 80, flags: ["WardF"] },
+      { sprite: "wardf4", time: 80, flags: ["WardF"] },
     ],
   },
   ward: {
     loop: 1,
     frames: [
-      { sprite: "ward1", time: 80, flags: ["ward"] },
-      { sprite: "ward2", time: 80, flags: ["ward"] },
-      { sprite: "ward3", time: 80, flags: ["ward"] },
-      { sprite: "ward4", time: 80, flags: ["ward"] },
+      { sprite: "ward1", time: 80, flags: ["Ward"] },
+      { sprite: "ward2", time: 80, flags: ["Ward"] },
+      { sprite: "ward3", time: 80, flags: ["Ward"] },
+      { sprite: "ward4", time: 80, flags: ["Ward"] },
     ],
   },
   wardb: {
     loop: 1,
     frames: [
-      { sprite: "wardb1", time: 80, flags: ["wardb"] },
-      { sprite: "wardb2", time: 80, flags: ["wardb"] },
-      { sprite: "wardb3", time: 80, flags: ["wardb"] },
-      { sprite: "wardb4", time: 80, flags: ["wardb"] },
+      { sprite: "wardb1", time: 80, flags: ["WardB"] },
+      { sprite: "wardb2", time: 80, flags: ["WardB"] },
+      { sprite: "wardb3", time: 80, flags: ["WardB"] },
+      { sprite: "wardb4", time: 80, flags: ["WardB"] },
     ],
   },
   dodge: {
     loop: 3,
     frames: [
-      { sprite: "dodge1", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge2", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge3", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge4", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge5", time: 80, flags: ["nocontrol"] },
+      { sprite: "dodge1", time: 80, flags: [nc] },
+      { sprite: "dodge2", time: 80, flags: [nc] },
+      { sprite: "dodge3", time: 80, flags: [nc] },
+      { sprite: "dodge4", time: 80, flags: [nc] },
+      { sprite: "dodge5", time: 80, flags: [nc] },
     ],
   },
   dodge_end: {
     finishEvent: "dodge",
     frames: [
-      { sprite: "dodge6", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge7", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge8", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge9", time: 80, flags: ["nocontrol"] },
-      { sprite: "dodge10", time: 80, flags: ["nocontrol"] },
+      { sprite: "dodge6", time: 80, flags: [nc] },
+      { sprite: "dodge7", time: 80, flags: [nc] },
+      { sprite: "dodge8", time: 80, flags: [nc] },
+      { sprite: "dodge9", time: 80, flags: [nc] },
+      { sprite: "dodge10", time: 80, flags: [nc] },
     ],
   },
   hurt: {
     finishEvent: "hurt",
     frames: [
-      { sprite: "hurt1", time: 80, flags: ["nocontrol"] },
-      { sprite: "hurt2", time: 80, flags: ["nocontrol"] },
-      { sprite: "hurt3", time: 80, flags: ["nocontrol"] },
-      { sprite: "hurt4", time: 80, flags: ["nocontrol"] },
-      { sprite: "hurt5", time: 80, flags: ["nocontrol"] },
-      { sprite: "hurt6", time: 80, flags: ["nocontrol"] },
+      { sprite: "hurt1", time: 80, flags: [nc] },
+      { sprite: "hurt2", time: 80, flags: [nc] },
+      { sprite: "hurt3", time: 80, flags: [nc] },
+      { sprite: "hurt4", time: 80, flags: [nc] },
+      { sprite: "hurt5", time: 80, flags: [nc] },
+      { sprite: "hurt6", time: 80, flags: [nc] },
     ],
   },
   death: {
     finishEvent: "death",
     frames: [
-      { sprite: "death1", time: 80, flags: ["nocontrol"] },
-      { sprite: "death2", time: 80, flags: ["nocontrol"] },
-      { sprite: "death3", time: 80, flags: ["nocontrol"] },
-      { sprite: "death4", time: 80, flags: ["nocontrol"] },
-      { sprite: "death5", time: 80, flags: ["nocontrol"] },
-      { sprite: "death6", time: 80, flags: ["nocontrol"] },
-      { sprite: "death7", time: 80, flags: ["nocontrol"] },
-      { sprite: "death8", time: 80, flags: ["nocontrol"] },
-      { sprite: "death9", time: 80, flags: ["nocontrol"] },
-      { sprite: "death10", time: 80, flags: ["nocontrol"] },
-      { sprite: "death11", time: 80, flags: ["nocontrol"] },
-      { sprite: "death12", time: 80, flags: ["nocontrol"] },
-      { sprite: "death13", time: 80, flags: ["nocontrol"] },
-      { sprite: "death14", time: 80, flags: ["nocontrol"] },
-      { sprite: "death15", time: 80, flags: ["nocontrol"] },
-      { sprite: "death16", time: 80, flags: ["nocontrol"] },
+      { sprite: "death1", time: 80, flags: [nc] },
+      { sprite: "death2", time: 80, flags: [nc] },
+      { sprite: "death3", time: 80, flags: [nc] },
+      { sprite: "death4", time: 80, flags: [nc] },
+      { sprite: "death5", time: 80, flags: [nc] },
+      { sprite: "death6", time: 80, flags: [nc] },
+      { sprite: "death7", time: 80, flags: [nc] },
+      { sprite: "death8", time: 80, flags: [nc] },
+      { sprite: "death9", time: 80, flags: [nc] },
+      { sprite: "death10", time: 80, flags: [nc] },
+      { sprite: "death11", time: 80, flags: [nc] },
+      { sprite: "death12", time: 80, flags: [nc] },
+      { sprite: "death13", time: 80, flags: [nc] },
+      { sprite: "death14", time: 80, flags: [nc] },
+      { sprite: "death15", time: 80, flags: [nc] },
+      { sprite: "death16", time: 80, flags: [nc] },
     ],
   },
 };
