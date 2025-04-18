@@ -271,6 +271,7 @@ export default class AnimationTester {
   destroy() {
     this.stop();
     this.element.remove();
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
   }
 
   get animator() {
@@ -315,11 +316,8 @@ export default class AnimationTester {
   }
 
   onVisibilityChange = () => {
-    if (document.hidden) {
-      this.stop();
-    } else {
-      this.run();
-    }
+    if (document.hidden) this.stop();
+    else this.run();
   };
 
   tick = (newTime: DOMHighResTimeStamp) => {
@@ -334,7 +332,7 @@ export default class AnimationTester {
       frameFlags,
     } = this;
     const { width, height } = canvas;
-    const diff = newTime - time; // TODO cap this
+    const diff = Math.min(newTime - time, 1000 / 60);
     animator.advance(diff);
     eventShower.advance(diff);
     this.time = newTime;
