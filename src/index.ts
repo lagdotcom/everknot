@@ -1,10 +1,15 @@
 import AnimationTester from "./AnimationTester";
+import { makeElement } from "./dom";
 import { kapplerAnimator } from "./Kappler";
 import ResourceManager from "./lib/ResourceManager";
 import { woodyAnimator } from "./Woody";
 
-async function startAnimationTester() {
-  const t = new AnimationTester(new ResourceManager(), [
+const rm = new ResourceManager();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).rm = rm;
+
+function startAnimationTester() {
+  const t = new AnimationTester(document.body, rm, [
     woodyAnimator,
     kapplerAnimator,
   ]);
@@ -12,6 +17,27 @@ async function startAnimationTester() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).t = t;
+
+  return t.destroy.bind(t);
 }
 
-window.addEventListener("load", startAnimationTester);
+function initialiseUi() {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  let cleanup = () => {};
+
+  const menu = makeElement("menu", document.body);
+  makeElement(
+    "button",
+    menu,
+    { innerText: "Animation Tester" },
+    {},
+    {
+      click: () => {
+        cleanup();
+        cleanup = startAnimationTester();
+      },
+    },
+  );
+}
+
+window.addEventListener("load", initialiseUi);

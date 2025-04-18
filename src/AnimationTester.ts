@@ -1,3 +1,4 @@
+import { makeElement } from "./dom";
 import Animator from "./lib/Animator";
 import ResourceManager from "./lib/ResourceManager";
 import get2DContext from "./utils/get2DContext";
@@ -7,29 +8,32 @@ class AnimationSelector {
   select: HTMLSelectElement;
 
   constructor(tester: AnimationTester) {
-    this.element = document.createElement("label");
-    this.element.innerText = "Animation: ";
-
-    this.select = document.createElement("select");
-    this.element.append(this.select);
-
-    this.select.addEventListener("change", () => {
-      const anim = this.select.value;
-      tester.animator.changeAnimation(anim);
+    this.element = makeElement("label", tester.panel, {
+      innerText: "Animation: ",
     });
+    this.select = makeElement(
+      "select",
+      this.element,
+      { name: "animation" },
+      {},
+      {
+        change: () => {
+          const anim = this.select.value;
+          tester.animator.changeAnimation(anim);
+        },
+      },
+    );
   }
 
   use(animator: Animator) {
     this.select.innerHTML = "";
 
-    for (const [name] of animator.animations) {
-      const option = document.createElement("option");
-      option.selected = name === animator.currentAnimation;
-      option.value = name;
-      option.textContent = name;
-
-      this.select.append(option);
-    }
+    for (const [name] of animator.animations)
+      makeElement("option", this.select, {
+        selected: name === animator.currentAnimation,
+        textContent: name,
+        value: name,
+      });
   }
 }
 
@@ -37,13 +41,12 @@ class Flipper {
   element: HTMLLabelElement;
   box: HTMLInputElement;
 
-  constructor(label: string) {
-    this.element = document.createElement("label");
-    this.element.innerText = label;
-
-    this.box = document.createElement("input");
-    this.box.type = "checkbox";
-    this.element.append(this.box);
+  constructor(parent: HTMLElement, label: string) {
+    this.element = makeElement("label", parent, { innerText: label });
+    this.box = makeElement("input", this.element, {
+      name: label,
+      type: "checkbox",
+    });
   }
 }
 
@@ -53,14 +56,12 @@ const makeNumberInput = (
   value: number,
   onChange?: (value: number) => unknown,
 ) => {
-  const label = document.createElement("label");
-  label.innerText = labelText;
-  parent.append(label);
-
-  const input = document.createElement("input");
-  input.type = "number";
-  input.valueAsNumber = value;
-  label.append(input);
+  const label = makeElement("label", parent, { innerText: labelText });
+  const input = makeElement("input", label, {
+    type: "number",
+    name: labelText,
+    valueAsNumber: value,
+  });
 
   if (onChange)
     input.addEventListener("change", () => onChange(input.valueAsNumber));
@@ -74,13 +75,14 @@ class OriginChanger {
   inputY: HTMLInputElement;
 
   constructor(private tester: AnimationTester) {
-    this.element = document.createElement("div");
-    this.element.style.display = "flex";
-    this.element.style.flexDirection = "column";
+    this.element = makeElement(
+      "div",
+      tester.panel,
+      {},
+      { display: "flex", flexDirection: "column" },
+    );
 
-    const label = document.createElement("div");
-    label.innerText = "Origin";
-    this.element.append(label);
+    makeElement("div", this.element, { innerText: "Origin" });
 
     this.inputX = makeNumberInput(
       this.element,
@@ -110,13 +112,14 @@ class HitboxChanger {
   inputH: HTMLInputElement;
 
   constructor(tester: AnimationTester) {
-    this.element = document.createElement("div");
-    this.element.style.display = "flex";
-    this.element.style.flexDirection = "column";
+    this.element = makeElement(
+      "div",
+      tester.panel,
+      {},
+      { display: "flex", flexDirection: "column" },
+    );
 
-    const label = document.createElement("div");
-    label.innerText = "Hitbox";
-    this.element.append(label);
+    makeElement("div", this.element, { innerText: "Hitbox" });
 
     this.inputX = makeNumberInput(
       this.element,
@@ -159,11 +162,13 @@ class EventShower {
 
   constructor(private tester: AnimationTester) {
     this.attached = new Set();
-
-    this.element = document.createElement("div");
-    this.element.innerText = "hello";
+    this.element = makeElement(
+      "div",
+      tester.panel,
+      { innerText: "hello" },
+      { opacity: "0" },
+    );
     this.opacity = 0;
-    this.element.style.opacity = "0";
   }
 
   show = (name: string) => () => {
@@ -197,21 +202,21 @@ class AnimatorSelector {
   element: HTMLSelectElement;
 
   constructor(tester: AnimationTester) {
-    this.element = document.createElement("select");
-
-    for (const animator of tester.animators) {
-      const option = document.createElement("option");
-      option.innerText = animator.name;
-      this.element.append(option);
-    }
-
-    this.element.addEventListener("change", () =>
-      tester.change(this.element.selectedIndex),
+    this.element = makeElement(
+      "select",
+      tester.panel,
+      { name: "animator" },
+      {},
+      { change: () => tester.change(this.element.selectedIndex) },
     );
+
+    for (const animator of tester.animators)
+      makeElement("option", this.element, { innerText: animator.name });
   }
 }
 
 export default class AnimationTester {
+  element: HTMLElement;
   animatorIndex!: number;
   animatorSelector: AnimatorSelector;
   canvas: HTMLCanvasElement;
@@ -229,49 +234,43 @@ export default class AnimationTester {
   frameFlags: HTMLSpanElement;
 
   constructor(
+    public parent: HTMLElement,
     public rm: ResourceManager,
     public animators: Animator[],
   ) {
-    this.canvas = document.createElement("canvas");
+    this.element = makeElement("div", parent);
+    this.canvas = makeElement("canvas", this.element);
     this.ctx = get2DContext(this.canvas);
-    document.body.append(this.canvas);
 
-    this.panel = document.createElement("div");
-    this.panel.style.display = "flex";
-    this.panel.style.flexDirection = "column";
-    this.panel.style.rowGap = "4px";
-    document.body.append(this.panel);
+    this.panel = makeElement(
+      "div",
+      this.element,
+      {},
+      { display: "flex", flexDirection: "column", rowGap: "4px" },
+    );
 
     this.animatorSelector = new AnimatorSelector(this);
-    this.panel.append(this.animatorSelector.element);
-
     this.animationSelector = new AnimationSelector(this);
-    this.panel.append(this.animationSelector.element);
-
-    this.horizontalFlipper = new Flipper("Flip Horizontally?");
-    this.panel.append(this.horizontalFlipper.element);
-
+    this.horizontalFlipper = new Flipper(this.panel, "Flip Horizontally?");
     this.originChanger = new OriginChanger(this);
-    this.panel.append(this.originChanger.element);
-
     this.hitboxChanger = new HitboxChanger(this);
-    this.panel.append(this.hitboxChanger.element);
-
     this.eventShower = new EventShower(this);
-    this.panel.append(this.eventShower.element);
 
-    this.frameName = document.createElement("span");
-    this.frameName.innerText = `Frame: ...`;
-    this.panel.append(this.frameName);
+    this.frameName = makeElement("span", this.panel, {
+      innerText: "Frame: ...",
+    });
 
-    this.frameFlags = document.createElement("span");
-    this.frameFlags.innerText = `Flags: `;
-    this.panel.append(this.frameFlags);
+    this.frameFlags = makeElement("span", this.panel, { innerText: "Flags: " });
 
     this.time = 0;
     this.paused = false;
     document.addEventListener("visibilitychange", this.onVisibilityChange);
     this.change(0);
+  }
+
+  destroy() {
+    this.stop();
+    this.element.remove();
   }
 
   get animator() {
@@ -301,8 +300,14 @@ export default class AnimationTester {
   }
 
   run() {
+    this.paused = false;
     this.time = performance.now();
     this.schedule();
+  }
+
+  stop() {
+    this.paused = true;
+    cancelAnimationFrame(this.request);
   }
 
   schedule() {
@@ -311,10 +316,8 @@ export default class AnimationTester {
 
   onVisibilityChange = () => {
     if (document.hidden) {
-      this.paused = true;
-      cancelAnimationFrame(this.request);
+      this.stop();
     } else {
-      this.paused = false;
       this.run();
     }
   };
