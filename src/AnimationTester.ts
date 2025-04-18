@@ -1,7 +1,9 @@
-import { makeElement } from "./dom";
 import Animator from "./lib/Animator";
+import { Milliseconds } from "./lib/flavours";
 import ResourceManager from "./lib/ResourceManager";
+import Runnable from "./lib/Runnable";
 import get2DContext from "./utils/get2DContext";
+import makeElement from "./utils/makeElement";
 
 class AnimationSelector {
   element: HTMLLabelElement;
@@ -215,15 +217,12 @@ class AnimatorSelector {
   }
 }
 
-export default class AnimationTester {
+export default class AnimationTester extends Runnable {
   element: HTMLElement;
   animatorIndex!: number;
   animatorSelector: AnimatorSelector;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  time: DOMHighResTimeStamp;
-  paused: boolean;
-  request!: number;
   panel: HTMLDivElement;
   animationSelector: AnimationSelector;
   horizontalFlipper: Flipper;
@@ -238,6 +237,8 @@ export default class AnimationTester {
     public rm: ResourceManager,
     public animators: Animator[],
   ) {
+    super();
+
     this.element = makeElement("div", parent);
     this.canvas = makeElement("canvas", this.element);
     this.ctx = get2DContext(this.canvas);
@@ -261,17 +262,13 @@ export default class AnimationTester {
     });
 
     this.frameFlags = makeElement("span", this.panel, { innerText: "Flags: " });
-
-    this.time = 0;
-    this.paused = false;
-    document.addEventListener("visibilitychange", this.onVisibilityChange);
     this.change(0);
   }
 
   destroy() {
+    super.destroy();
     this.stop();
     this.element.remove();
-    document.removeEventListener("visibilitychange", this.onVisibilityChange);
   }
 
   get animator() {
@@ -300,42 +297,19 @@ export default class AnimationTester {
     void this.rm.image(animator.spritesheet.url);
   }
 
-  run() {
-    this.paused = false;
-    this.time = performance.now();
-    this.schedule();
-  }
-
-  stop() {
-    this.paused = true;
-    cancelAnimationFrame(this.request);
-  }
-
-  schedule() {
-    this.request = requestAnimationFrame(this.tick);
-  }
-
-  onVisibilityChange = () => {
-    if (document.hidden) this.stop();
-    else this.run();
-  };
-
-  tick = (newTime: DOMHighResTimeStamp) => {
+  advance(diff: Milliseconds) {
     const {
       animator,
       canvas,
       ctx,
-      time,
       horizontalFlipper,
       eventShower,
       frameName,
       frameFlags,
     } = this;
     const { width, height } = canvas;
-    const diff = Math.min(newTime - time, 1000 / 60);
     animator.advance(diff);
     eventShower.advance(diff);
-    this.time = newTime;
 
     const { frame, hitbox, spritesheet } = animator;
     frameName.innerText = `Frame: ${frame.sprite}`;
@@ -384,7 +358,5 @@ export default class AnimationTester {
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
-
-    if (!this.paused) this.schedule();
-  };
+  }
 }

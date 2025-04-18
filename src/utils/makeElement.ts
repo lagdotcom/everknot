@@ -9,7 +9,7 @@ type EventsOf<T extends keyof HTMLElementTagNameMap> = {
   ) => unknown;
 };
 
-export function makeElement<T extends keyof HTMLElementTagNameMap>(
+export default function makeElement<T extends keyof HTMLElementTagNameMap>(
   tagName: T,
   parent: HTMLElement,
   attributes: AttributesOf<T> = {},

@@ -1,5 +1,7 @@
 import Animator, { AnimationData } from "./lib/Animator";
-import { Milliseconds, Pixels } from "./lib/flavours";
+import AR from "./lib/AR";
+import Entity from "./lib/Entity";
+import { Milliseconds, Pixels, Radians } from "./lib/flavours";
 import Rect from "./lib/Rect";
 import SpriteGrid from "./lib/SpriteGrid";
 import XY from "./lib/XY";
@@ -121,7 +123,7 @@ type Sprite = typeof spritesheet extends SpriteGrid<infer T> ? T : never;
 
 type Event = "turn" | "land" | "swing" | "dodge" | "hurt" | "death";
 
-type Flag = "Ward" | "WardB" | "WardF" | "NoControl";
+type Flag = "Ward" | "WardB" | "WardF" | "NoControl" | "Midair";
 const nc: Flag = "NoControl";
 
 const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
@@ -129,19 +131,19 @@ const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
   turn: { finishEvent: "turn", frames: [{ sprite: "turn", time: turnTime }] },
   turn_jump: {
     finishEvent: "turn",
-    frames: [{ sprite: "turn_jump", time: turnTime }],
+    frames: [{ sprite: "turn_jump", time: turnTime, flags: ["Midair"] }],
   },
   turn_djump: {
     finishEvent: "turn",
-    frames: [{ sprite: "turn_djump", time: turnTime }],
+    frames: [{ sprite: "turn_djump", time: turnTime, flags: ["Midair"] }],
   },
   turn_bleap: {
     finishEvent: "turn",
-    frames: [{ sprite: "turn_bleap", time: turnTime }],
+    frames: [{ sprite: "turn_bleap", time: turnTime, flags: ["Midair"] }],
   },
   turn_fleap: {
     finishEvent: "turn",
-    frames: [{ sprite: "turn_fleap", time: turnTime }],
+    frames: [{ sprite: "turn_fleap", time: turnTime, flags: ["Midair"] }],
   },
   run: {
     loop: 1,
@@ -163,23 +165,23 @@ const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
   jump: {
     loop: 3,
     frames: [
-      { sprite: "jump1", time: 80 },
-      { sprite: "jump2", time: 80 },
-      { sprite: "jump3", time: 80 },
-      { sprite: "jump4", time: 80 },
-      { sprite: "jump5", time: 80 },
-      { sprite: "jump6", time: 80 },
+      { sprite: "jump1", time: 80, flags: ["Midair"] },
+      { sprite: "jump2", time: 80, flags: ["Midair"] },
+      { sprite: "jump3", time: 80, flags: ["Midair"] },
+      { sprite: "jump4", time: 80, flags: ["Midair"] },
+      { sprite: "jump5", time: 80, flags: ["Midair"] },
+      { sprite: "jump6", time: 80, flags: ["Midair"] },
     ],
   },
   djump: {
     loop: 3,
     frames: [
-      { sprite: "djump1", time: 80 },
-      { sprite: "djump2", time: 80 },
-      { sprite: "djump3", time: 80 },
-      { sprite: "djump4", time: 80 },
-      { sprite: "djump5", time: 80 },
-      { sprite: "djump6", time: 80 },
+      { sprite: "djump1", time: 80, flags: ["Midair"] },
+      { sprite: "djump2", time: 80, flags: ["Midair"] },
+      { sprite: "djump3", time: 80, flags: ["Midair"] },
+      { sprite: "djump4", time: 80, flags: ["Midair"] },
+      { sprite: "djump5", time: 80, flags: ["Midair"] },
+      { sprite: "djump6", time: 80, flags: ["Midair"] },
     ],
   },
   land: {
@@ -192,23 +194,23 @@ const animationData: AnimationData<Animation, Sprite, Event, Flag> = {
   bleap: {
     loop: 3,
     frames: [
-      { sprite: "bleap1", time: 80 },
-      { sprite: "bleap2", time: 80 },
-      { sprite: "bleap3", time: 80 },
-      { sprite: "bleap4", time: 80 },
-      { sprite: "bleap5", time: 80 },
-      { sprite: "bleap6", time: 80 },
+      { sprite: "bleap1", time: 80, flags: ["Midair"] },
+      { sprite: "bleap2", time: 80, flags: ["Midair"] },
+      { sprite: "bleap3", time: 80, flags: ["Midair"] },
+      { sprite: "bleap4", time: 80, flags: ["Midair"] },
+      { sprite: "bleap5", time: 80, flags: ["Midair"] },
+      { sprite: "bleap6", time: 80, flags: ["Midair"] },
     ],
   },
   fleap: {
     loop: 3,
     frames: [
-      { sprite: "fleap1", time: 80 },
-      { sprite: "fleap2", time: 80 },
-      { sprite: "fleap3", time: 80 },
-      { sprite: "fleap4", time: 80 },
-      { sprite: "fleap5", time: 80 },
-      { sprite: "fleap6", time: 80 },
+      { sprite: "fleap1", time: 80, flags: ["Midair"] },
+      { sprite: "fleap2", time: 80, flags: ["Midair"] },
+      { sprite: "fleap3", time: 80, flags: ["Midair"] },
+      { sprite: "fleap4", time: 80, flags: ["Midair"] },
+      { sprite: "fleap5", time: 80, flags: ["Midair"] },
+      { sprite: "fleap6", time: 80, flags: ["Midair"] },
     ],
   },
   swing: {
@@ -315,3 +317,83 @@ export const woodyAnimator = new Animator<Animation, Sprite, Event, Flag>(
   new Rect<Pixels>(62, 80, 102, 90),
   animationData,
 );
+
+type Facing = -1 | 1;
+
+const walkSpeed: Radians = 0.05;
+const jumpStrength: Pixels = 0.7;
+
+export class Woody extends Entity<Animation, Sprite, Event, Flag> {
+  facing: Facing;
+  flippingTo?: Facing;
+  doubleJump: boolean;
+  landing: boolean;
+
+  constructor(position: AR) {
+    super(woodyAnimator, position);
+    this.facing = 1;
+    this.doubleJump = false;
+    this.gravity = true;
+    this.landing = false;
+
+    this.animator.on("land", this.onLand);
+    this.animator.on("turn", this.onTurn);
+  }
+
+  destroy() {
+    this.animator.off("land", this.onLand);
+    this.animator.off("turn", this.onTurn);
+  }
+
+  onLand = () => {
+    this.landing = false;
+  };
+
+  onTurn = () => {
+    this.facing = this.flippingTo ?? 1;
+    this.flippingTo = undefined;
+    this.flip = this.facing === -1;
+  };
+
+  update(time: Milliseconds) {
+    const { animator, doubleJump, flippingTo, floor, landing, velocity } = this;
+
+    if (flippingTo) {
+      if (!floor)
+        animator.continueAnimation(doubleJump ? "turn_jump" : "turn_djump");
+      else animator.continueAnimation("turn");
+    } else if (floor) {
+      if (animator.frame.flags?.includes("Midair") || landing) {
+        animator.continueAnimation("land");
+        this.doubleJump = true;
+        this.landing = true;
+      } else if (velocity.a) animator.continueAnimation("run");
+      else animator.continueAnimation("idle");
+    } else {
+      animator.continueAnimation(doubleJump ? "jump" : "djump");
+    }
+
+    animator.advance(time);
+  }
+
+  face(direction: Facing) {
+    if (this.facing === direction) return;
+    this.flippingTo = direction;
+  }
+
+  walk(direction: Facing) {
+    this.velocity.a = direction * walkSpeed;
+    this.face(direction);
+  }
+
+  get canJump() {
+    return !!this.floor || this.doubleJump;
+  }
+
+  jump() {
+    if (this.velocity.r > 0 || !this.canJump) return;
+
+    this.velocity.r = jumpStrength;
+    if (this.doubleJump && !this.floor) this.doubleJump = false;
+  }
+}

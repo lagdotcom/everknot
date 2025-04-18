@@ -99,11 +99,16 @@ export default class Animator<
 
   changeAnimation(name: TAnimation) {
     const anim = this.animations.get(name);
-    if (!anim) return new Error(`Invalid animation name: ${name}`);
+    if (!anim) throw new Error(`Invalid animation name: ${name}`);
 
     this.currentAnimation = name;
     this.frameProgress = 0;
     this.changeIndex(1);
+  }
+
+  continueAnimation(name: TAnimation) {
+    if (this.currentAnimation === name) return;
+    return this.changeAnimation(name);
   }
 
   private changeIndex(index: FrameIndex) {
