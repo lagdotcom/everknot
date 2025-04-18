@@ -3,7 +3,7 @@ import Rect from "./Rect";
 
 export type SpriteColumnData<TSprite> = TSprite[][];
 
-export default class Spritesheet<TSprite> {
+export default class SpriteGrid<TSprite> {
   rects: Map<TSprite, Rect<Pixels>>;
 
   constructor(

@@ -1,11 +1,11 @@
 import Animator, { AnimationData } from "./lib/Animator";
 import { Milliseconds, Pixels } from "./lib/flavours";
 import Rect from "./lib/Rect";
-import Spritesheet from "./lib/Spritesheet";
+import SpriteGrid from "./lib/SpriteGrid";
 import XY from "./lib/XY";
 import kapplerUrl from "./res/e_kappler.png";
 
-const spritesheet = new Spritesheet(kapplerUrl, 224, 224, [
+const spritesheet = new SpriteGrid(kapplerUrl, 224, 224, [
   ["happy1", "happy2", "happy3", "happy4", "happy5", "happy6"],
   ["flip1", "flip2", "flip3", "flip4", "flip5", "flip6"],
   ["conf1", "conf2", "conf3", "conf4", "conf5", "conf6"],
@@ -35,7 +35,7 @@ type Animation =
   | "shock"
   | "cry"
   | "clown";
-type Sprite = typeof spritesheet extends Spritesheet<infer T> ? T : never;
+type Sprite = typeof spritesheet extends SpriteGrid<infer T> ? T : never;
 
 const animationData: AnimationData<Animation, Sprite, never, never> = {
   happy: {

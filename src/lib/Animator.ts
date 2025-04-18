@@ -1,7 +1,7 @@
 import { FrameIndex, Milliseconds, Pixels } from "./flavours";
 import MapSet from "./MapSet";
 import Rect from "./Rect";
-import Spritesheet from "./Spritesheet";
+import SpriteGrid from "./SpriteGrid";
 import XY from "./XY";
 
 interface Frame<TSprite, TEvent, TFlag> {
@@ -40,7 +40,7 @@ export default class Animator<
 
   constructor(
     public name: string,
-    public spritesheet: Spritesheet<TSprite>,
+    public spritesheet: SpriteGrid<TSprite>,
     public currentAnimation: TAnimation,
     public origin: XY<Pixels>,
     public hitbox: Rect<Pixels>,

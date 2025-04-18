@@ -1,7 +1,7 @@
 import Animator, { AnimationData } from "./lib/Animator";
 import { Milliseconds, Pixels } from "./lib/flavours";
 import Rect from "./lib/Rect";
-import Spritesheet from "./lib/Spritesheet";
+import SpriteGrid from "./lib/SpriteGrid";
 import XY from "./lib/XY";
 import woodyUrl from "./res/pc_woody.png";
 
@@ -24,7 +24,7 @@ Cell order, left to right:
 - Death (on death, play hurt animation once fully, then death animation after)
 */
 
-const spritesheet = new Spritesheet(woodyUrl, 224, 224, [
+const spritesheet = new SpriteGrid(woodyUrl, 224, 224, [
   ["idle"],
   ["turn", "turn_jump", "turn_djump", "turn_bleap", "turn_fleap"],
   [
@@ -117,7 +117,7 @@ type Animation =
   | "dodge_end"
   | "hurt"
   | "death";
-type Sprite = typeof spritesheet extends Spritesheet<infer T> ? T : never;
+type Sprite = typeof spritesheet extends SpriteGrid<infer T> ? T : never;
 
 type Event = "turn" | "land" | "swing" | "dodge" | "hurt" | "death";
 
